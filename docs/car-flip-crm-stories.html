@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Flip CRM — User Stories Board</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0c0f;
+  --surface: #14141a;
+  --surface2: #1c1c25;
+  --surface3: #24242f;
+  --border: #2a2a38;
+  --border2: #353548;
+  --text: #e8e8f0;
+  --text2: #9898b8;
+  --text3: #5a5a78;
+  --accent: #7c6af7;
+  --accent2: #a594fc;
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --cyan: #06b6d4;
+  --pink: #ec4899;
+  --p1: #7c6af7; --p1l: #2d2560;
+  --p2: #22c55e; --p2l: #0d3d22;
+  --p3: #f59e0b; --p3l: #3d2a05;
+  --p4: #06b6d4; --p4l: #053040;
+  --p5: #ec4899; --p5l: #3d0f28;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* HEADER */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(12,12,15,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex; align-items: center; gap: 20px;
+  height: 60px;
+}
+.header-logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.header-logo-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--pink));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.header-logo-text { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+.header-logo-text span { color: var(--accent2); }
+.header-meta { display: flex; align-items: center; gap: 8px; margin-left: 12px; flex: 1; }
+.editable-field {
+  cursor: text; padding: 3px 8px; border-radius: 5px;
+  border: 1px solid transparent;
+  background: transparent; color: var(--text);
+  font-family: 'Syne', sans-serif; font-size: 13px;
+  transition: all 0.15s;
+}
+.editable-field:hover { border-color: var(--border2); background: var(--surface2); }
+.editable-field:focus { border-color: var(--accent); outline: none; background: var(--surface2); }
+.sep { color: var(--text3); font-size: 16px; }
+.status-badge {
+  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  cursor: pointer; letter-spacing: 0.4px; text-transform: uppercase;
+  border: 1px solid transparent; transition: all 0.15s;
+}
+.status-active { background: #0d3d22; color: var(--green); border-color: #1a5e35; }
+.status-planning { background: #2d2560; color: var(--accent2); border-color: #3d3380; }
+.status-review { background: #3d2a05; color: var(--amber); border-color: #5e4208; }
+.header-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.btn {
+  padding: 6px 14px; border-radius: 7px; border: none; cursor: pointer;
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600;
+  transition: all 0.15s; display: flex; align-items: center; gap: 6px;
+}
+.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+.btn-ghost:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+.btn-danger { background: transparent; color: var(--red); border: 1px solid #3d1515; }
+.btn-danger:hover { background: #2d0f0f; }
+
+/* STATS BAR */
+.stats-bar {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  overflow-x: auto;
+}
+.stat-item {
+  padding: 14px 24px; display: flex; flex-direction: column; gap: 2px;
+  border-right: 1px solid var(--border); flex-shrink: 0;
+}
+.stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; font-family: 'JetBrains Mono', monospace; }
+.stat-value { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+.stat-sub { font-size: 11px; color: var(--text2); }
+
+/* MAIN LAYOUT */
+.main { padding: 28px; max-width: 1400px; margin: 0 auto; }
+
+/* PHASE TABS */
+.phase-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+.phase-tab {
+  padding: 8px 18px; border-radius: 8px; cursor: pointer;
+  font-size: 13px; font-weight: 600; border: 1px solid var(--border2);
+  background: var(--surface); color: var(--text2); transition: all 0.15s;
+}
+.phase-tab.active { background: var(--surface3); color: var(--text); border-color: var(--accent); }
+.phase-tab:hover:not(.active) { background: var(--surface2); color: var(--text); }
+
+/* EPIC SECTION */
+.epic-section {
+  margin-bottom: 28px; border: 1px solid var(--border); border-radius: 14px;
+  overflow: hidden; background: var(--surface);
+}
+.epic-header {
+  padding: 18px 24px; display: flex; align-items: center; gap: 14px;
+  cursor: pointer; user-select: none; position: relative;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.epic-header:hover { background: var(--surface2); }
+.epic-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0; cursor: pointer;
+}
+.epic-title-wrap { flex: 1; min-width: 0; }
+.epic-name {
+  font-size: 16px; font-weight: 700; letter-spacing: -0.2px;
+  cursor: text; display: inline-block;
+}
+.epic-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+.epic-id { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3); }
+.epic-actions {
+  display: flex; align-items: center; gap: 6px;
+  opacity: 0; transition: opacity 0.15s;
+}
+.epic-section:hover .epic-actions { opacity: 1; }
+.icon-btn {
+  width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--border2);
+  background: transparent; color: var(--text2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+  transition: all 0.15s;
+}
+.icon-btn:hover { background: var(--surface3); color: var(--text); }
+.icon-btn.danger:hover { background: #2d0f0f; color: var(--red); border-color: #3d1515; }
+.chevron { font-size: 14px; color: var(--text3); transition: transform 0.2s; flex-shrink: 0; }
+.chevron.open { transform: rotate(90deg); }
+.progress-bar-wrap { height: 3px; background: var(--border); flex-shrink: 0; width: 80px; border-radius: 2px; overflow: hidden; }
+.progress-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+
+/* STORIES GRID */
+.stories-grid { padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+
+/* STORY CARD */
+.story-card {
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--surface2); overflow: hidden;
+  transition: all 0.15s;
+}
+.story-card:hover { border-color: var(--border2); background: var(--surface3); }
+.story-card.expanded { border-color: var(--accent); }
+.story-row {
+  padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+  cursor: pointer;
+}
+.story-id-badge {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+  padding: 3px 8px; border-radius: 5px; flex-shrink: 0; cursor: text;
+}
+.story-title {
+  flex: 1; font-size: 13px; font-weight: 500; min-width: 0;
+  cursor: text; padding: 2px 6px; border-radius: 5px; border: 1px solid transparent;
+  color: var(--text);
+}
+.story-title:hover { border-color: var(--border2); background: var(--surface); }
+.story-title:focus { border-color: var(--accent); outline: none; background: var(--surface); }
+.story-badges { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.priority-badge {
+  padding: 3px 8px; border-radius: 5px; font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; text-transform: uppercase; letter-spacing: 0.3px;
+}
+.must { background: #2d0f0f; color: var(--red); }
+.should { background: var(--p3l); color: var(--amber); }
+.could { background: var(--p4l); color: var(--cyan); }
+.type-badge {
+  padding: 3px 8px; border-radius: 5px; font-size: 11px; font-weight: 500;
+  font-family: 'JetBrains Mono', monospace;
+}
+.type-feat { background: #1a2d4d; color: #60a5fa; }
+.type-sec  { background: #2d0f0f; color: #f87171; }
+.type-arch { background: #2d1b69; color: var(--accent2); }
+.type-dx   { background: #0d3d22; color: var(--green); }
+.type-rt   { background: var(--p3l); color: var(--amber); }
+.phase-badge {
+  padding: 3px 8px; border-radius: 5px; font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; font-family: 'JetBrains Mono', monospace;
+}
+.ph1 { background: var(--p1l); color: var(--p1); }
+.ph2 { background: var(--p2l); color: var(--p2); }
+.ph3 { background: var(--p3l); color: var(--amber); }
+.ph4 { background: var(--p4l); color: var(--cyan); }
+.story-edit-btn {
+  width: 26px; height: 26px; border-radius: 6px; border: 1px solid transparent;
+  background: transparent; color: var(--text3); cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+  flex-shrink: 0;
+}
+.story-edit-btn:hover { background: var(--surface); border-color: var(--border2); color: var(--text2); }
+.story-delete-btn {
+  width: 26px; height: 26px; border-radius: 6px; border: 1px solid transparent;
+  background: transparent; color: var(--text3); cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+  flex-shrink: 0; opacity: 0;
+}
+.story-card:hover .story-delete-btn { opacity: 1; }
+.story-delete-btn:hover { background: #2d0f0f; border-color: #3d1515; color: var(--red); }
+
+/* STORY BODY */
+.story-body {
+  display: none; padding: 0 16px 16px; border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+.story-body.open { display: block; }
+.story-desc-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
+.story-desc {
+  font-size: 13px; color: var(--text2); margin-bottom: 14px; line-height: 1.6;
+  padding: 8px 10px; border-radius: 7px; border: 1px solid transparent;
+  background: transparent; cursor: text; min-height: 36px;
+  width: 100%; font-family: 'Syne', sans-serif; resize: none;
+}
+.story-desc:hover { border-color: var(--border2); background: var(--surface); }
+.story-desc:focus { border-color: var(--accent); outline: none; background: var(--surface); }
+.criteria-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.criteria-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; font-family: 'JetBrains Mono', monospace; }
+.add-criteria-btn {
+  font-size: 11px; color: var(--accent2); background: transparent; border: none; cursor: pointer;
+  font-family: 'Syne', sans-serif; font-weight: 600; padding: 2px 6px; border-radius: 4px;
+  transition: background 0.15s;
+}
+.add-criteria-btn:hover { background: var(--p1l); }
+.criteria-list { display: flex; flex-direction: column; gap: 5px; }
+.criterion-row { display: flex; align-items: flex-start; gap: 8px; }
+.criterion-check {
+  width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--border2);
+  background: transparent; cursor: pointer; flex-shrink: 0; margin-top: 2px;
+  display: flex; align-items: center; justify-content: center; font-size: 10px;
+  transition: all 0.15s;
+}
+.criterion-check.done { background: var(--green); border-color: var(--green); color: #fff; }
+.criterion-text {
+  flex: 1; font-size: 13px; color: var(--text2); line-height: 1.5;
+  border: 1px solid transparent; border-radius: 5px; padding: 1px 6px;
+  background: transparent; cursor: text; font-family: 'Syne', sans-serif;
+}
+.criterion-text:hover { border-color: var(--border2); background: var(--surface); }
+.criterion-text:focus { border-color: var(--accent); outline: none; background: var(--surface); }
+.criterion-del {
+  width: 20px; height: 20px; border: none; background: transparent; cursor: pointer;
+  color: var(--text3); font-size: 12px; border-radius: 4px; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; opacity: 0;
+}
+.criterion-row:hover .criterion-del { opacity: 1; }
+.criterion-del:hover { background: #2d0f0f; color: var(--red); }
+
+/* ADD STORY ROW */
+.add-story-row {
+  padding: 12px 20px; border-top: 1px solid var(--border);
+}
+.add-story-btn {
+  width: 100%; padding: 10px; border-radius: 8px; border: 1px dashed var(--border2);
+  background: transparent; color: var(--text3); cursor: pointer; font-size: 13px;
+  font-family: 'Syne', sans-serif; font-weight: 500; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.add-story-btn:hover { border-color: var(--accent); color: var(--accent2); background: var(--p1l); }
+
+/* ADD EPIC ROW */
+.add-epic-section { margin-bottom: 40px; }
+.add-epic-btn {
+  width: 100%; padding: 16px; border-radius: 14px; border: 1px dashed var(--border2);
+  background: transparent; color: var(--text3); cursor: pointer; font-size: 14px;
+  font-family: 'Syne', sans-serif; font-weight: 600; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.add-epic-btn:hover { border-color: var(--accent); color: var(--accent2); background: rgba(124,106,247,0.06); }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+  z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border2); border-radius: 16px;
+  width: 100%; max-width: 620px; max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+  animation: modalIn 0.2s ease;
+}
+@keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.modal-header { padding: 24px 28px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-size: 18px; font-weight: 700; }
+.modal-close { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border2); background: transparent; cursor: pointer; color: var(--text2); font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.modal-close:hover { background: var(--surface3); color: var(--text); }
+.modal-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 18px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; font-family: 'JetBrains Mono', monospace; }
+.form-input {
+  background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px;
+  padding: 10px 12px; color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px;
+  transition: border-color 0.15s;
+}
+.form-input:focus { border-color: var(--accent); outline: none; }
+.form-textarea { min-height: 80px; resize: vertical; }
+.form-row { display: flex; gap: 12px; }
+.form-row .form-group { flex: 1; }
+.form-select {
+  background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px;
+  padding: 10px 12px; color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px;
+  cursor: pointer;
+}
+.form-select:focus { border-color: var(--accent); outline: none; }
+.modal-criteria-list { display: flex; flex-direction: column; gap: 6px; }
+.modal-criterion { display: flex; align-items: center; gap: 8px; }
+.modal-criterion .form-input { flex: 1; padding: 8px 10px; font-size: 13px; }
+.modal-footer { padding: 20px 28px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+
+/* EMOJI PICKER */
+.emoji-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.emoji-opt { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface2); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.emoji-opt:hover { background: var(--p1l); border-color: var(--accent); }
+.emoji-opt.selected { background: var(--p1l); border-color: var(--accent); }
+
+/* TOAST */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 300; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px;
+  padding: 12px 18px; color: var(--text); font-size: 13px; font-weight: 500;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4); animation: toastIn 0.2s ease;
+  display: flex; align-items: center; gap: 10px; max-width: 300px;
+}
+@keyframes toastIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.toast-icon { font-size: 16px; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .main { padding: 16px; }
+  .story-badges { flex-wrap: wrap; }
+  .form-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">
+    <div class="header-logo-icon">🚗</div>
+    <div class="header-logo-text">Car Flip <span>CRM</span></div>
+  </div>
+  <div class="sep">/</div>
+  <input class="editable-field mono" id="doc-title" value="SDLC — User Stories" style="font-weight:600;font-size:14px;width:220px">
+  <div class="sep">·</div>
+  <input class="editable-field" id="doc-author" value="Ahmad">
+  <div class="sep">·</div>
+  <div class="status-badge status-active" id="doc-status" onclick="cycleStatus(this)">Active</div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="exportData()">⬇ Export</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()">⬆ Import</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+    <button class="btn btn-ghost btn-danger" onclick="if(confirm('Reset to defaults?')){resetData();}">↺ Reset</button>
+    <button class="btn btn-primary" onclick="openAddEpic()">＋ Epic</button>
+  </div>
+</div>
+
+<div class="stats-bar" id="stats-bar"></div>
+
+<div class="main">
+  <div class="phase-tabs" id="phase-tabs"></div>
+  <div id="board"></div>
+  <div class="add-epic-section">
+    <button class="add-epic-btn" onclick="openAddEpic()">＋ Add new epic</button>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<!-- STORY MODAL -->
+<div class="modal-overlay" id="story-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title-text">Edit Story</div>
+      <button class="modal-close" onclick="closeModal('story-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group" style="flex:0 0 100px">
+          <div class="form-label">Story ID</div>
+          <input class="form-input mono" id="m-id" placeholder="CRM-01">
+        </div>
+        <div class="form-group" style="flex:1">
+          <div class="form-label">Title</div>
+          <input class="form-input" id="m-title" placeholder="Story title...">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Description / User Story</div>
+        <textarea class="form-input form-textarea" id="m-desc" placeholder="As a user, I want to..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="form-label">Priority</div>
+          <select class="form-select" id="m-priority">
+            <option value="must">Must Have</option>
+            <option value="should">Should Have</option>
+            <option value="could">Could Have</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Type</div>
+          <select class="form-select" id="m-type">
+            <option value="feat">Feature</option>
+            <option value="sec">Security</option>
+            <option value="arch">Architecture</option>
+            <option value="dx">DevX</option>
+            <option value="rt">Real-time</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Phase / Week</div>
+          <select class="form-select" id="m-phase">
+            <option value="1">Phase 1 — Wk 1-2</option>
+            <option value="2">Phase 2 — Wk 3-4</option>
+            <option value="3">Phase 3 — Wk 5-6</option>
+            <option value="4">Phase 4 — Wk 7-8</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="criteria-header">
+          <div class="form-label">Acceptance Criteria</div>
+          <button class="add-criteria-btn" onclick="addModalCriteria()">＋ Add criterion</button>
+        </div>
+        <div class="modal-criteria-list" id="m-criteria"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('story-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveStory()">Save Story</button>
+    </div>
+  </div>
+</div>
+
+<!-- EPIC MODAL -->
+<div class="modal-overlay" id="epic-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Edit Epic</div>
+      <button class="modal-close" onclick="closeModal('epic-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">Epic Name</div>
+        <input class="form-input" id="em-name" placeholder="Epic name...">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Icon</div>
+        <div class="emoji-grid" id="em-emoji-grid"></div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Color</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="em-color-grid"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('epic-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEpic()">Save Epic</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const EMOJIS = ['🔐','🚗','📋','📊','⚡','🛡','🧪','🚀','🏗','💾','🔧','📦','🌐','✅','🎯','🔥','💡','🧩','⚙️','🔄'];
+const COLORS = [
+  { id:'purple', color:'#7c6af7', bg:'#2d2560' },
+  { id:'green',  color:'#22c55e', bg:'#0d3d22' },
+  { id:'amber',  color:'#f59e0b', bg:'#3d2a05' },
+  { id:'cyan',   color:'#06b6d4', bg:'#053040' },
+  { id:'pink',   color:'#ec4899', bg:'#3d0f28' },
+  { id:'red',    color:'#ef4444', bg:'#3d1515' },
+  { id:'blue',   color:'#60a5fa', bg:'#1a2d4d' },
+];
+
+const DEFAULT_DATA = {
+  title: 'SDLC — User Stories',
+  author: 'Ahmad',
+  status: 'active',
+  epics: [
+    {
+      id: 'epic-1', name: 'Project Setup & Database Foundation', icon: '🏗', color: 'purple',
+      open: true,
+      stories: [
+        { id:'#001', title:'Initialise monorepo — Node/Express backend, React frontend', desc:'As a developer, I want a clean monorepo structure so I can manage both frontend and backend from one repo.', priority:'must', type:'dx', phase:1, done:false, criteria:['Create /server and /client directories','Set up package.json in each','Configure root-level scripts','Add .gitignore for node_modules, .env','Verify both servers start with one command'] },
+        { id:'#002', title:'Set up PostgreSQL with connection pooling (pg/node-postgres)', desc:'As a developer, I want a reliable DB connection so all routes can query PostgreSQL efficiently.', priority:'must', type:'arch', phase:1, done:false, criteria:['Install pg and dotenv','Create db/pool.js with pg.Pool','Test connection on server start','Log success/failure clearly','Use env vars for connection string'] },
+        { id:'#003', title:'Design and migrate initial schema — users, vehicles, deals tables', desc:'As a developer, I want the core schema in place so all features can be built on solid foundations.', priority:'must', type:'arch', phase:1, done:false, criteria:['Write migration for users table with UUID PK','Write migration for vehicles table with FK to users','Write migration for deals table with FK to vehicles','Write migration for vehicle_images table','Write migration for refresh_tokens table','Run all migrations successfully'] },
+        { id:'#004', title:'Set up environment config with dotenv and .env.example', desc:'As a developer, I want environment variables managed safely so secrets never enter version control.', priority:'must', type:'dx', phase:1, done:false, criteria:['Create .env with all required keys','Create .env.example with placeholder values','Add .env to .gitignore','Document all required vars in README'] },
+        { id:'#005', title:'Configure ESLint, Prettier, and Git hooks (husky)', desc:'As a developer, I want consistent code style enforced automatically so PRs stay clean.', priority:'should', type:'dx', phase:1, done:false, criteria:['Install and configure ESLint with recommended rules','Install Prettier with opinionated config','Add husky pre-commit hook','Lint runs automatically before every commit','No linting errors on initial commit'] },
+        { id:'#006', title:'Write seed script with sample vehicles and users', desc:'As a developer, I want realistic seed data so I can develop and test features without manual entry.', priority:'should', type:'dx', phase:1, done:false, criteria:['Create seed.js with 3+ vehicles','Create at least 2 user accounts','Script is idempotent (safe to re-run)','Seed runs with npm run seed'] },
+      ]
+    },
+    {
+      id: 'epic-2', name: 'Authentication & Security Layer', icon: '🔐', color: 'red',
+      open: false,
+      stories: [
+        { id:'#007', title:'User registration endpoint with bcrypt password hashing', desc:'As a new user, I want to register with email and password so I can access the system securely.', priority:'must', type:'sec', phase:1, done:false, criteria:['POST /api/auth/register accepts email, password, name','Password hashed with bcrypt (salt rounds 12)','Returns 201 with user object (no password hash)','Returns 400 with validation errors if invalid','Rejects duplicate email with 409'] },
+        { id:'#008', title:'Login endpoint returning access + refresh JWT pair', desc:'As a registered user, I want to log in and receive tokens so I can make authenticated requests.', priority:'must', type:'sec', phase:1, done:false, criteria:['POST /api/auth/login accepts email and password','Compares bcrypt hash correctly','Returns signed access token (15min expiry)','Sets httpOnly cookie with refresh token (7 day expiry)','Returns 401 for invalid credentials'] },
+        { id:'#009', title:'Implement JWT refresh token rotation (store in httpOnly cookie)', desc:'As a logged-in user, I want my session to persist securely without re-logging in every 15 minutes.', priority:'must', type:'sec', phase:1, done:false, criteria:['POST /api/auth/refresh reads cookie','Validates token against DB hash','Issues new access token','Rotates refresh token (old one revoked)','Returns 401 if token is revoked or expired'] },
+        { id:'#010', title:'Auth middleware to protect private routes', desc:'As a developer, I want a reusable middleware so all private routes reject unauthenticated requests.', priority:'must', type:'sec', phase:1, done:false, criteria:['Middleware reads Authorization: Bearer header','Verifies JWT signature and expiry','Attaches user to req.user','Returns 401 if missing or invalid','Applied to all /api/vehicles and /api/deals routes'] },
+        { id:'#011', title:'Logout endpoint — invalidate refresh token in DB', desc:'As a user, I want to log out and have my session fully terminated so no one can reuse my token.', priority:'must', type:'sec', phase:1, done:false, criteria:['POST /api/auth/logout marks token as revoked in DB','Clears httpOnly cookie on response','Works even if token is already revoked','Returns 200 on success'] },
+        { id:'#012', title:'Input validation middleware with Zod on all auth routes', desc:'As a developer, I want structured input validation so the API never receives malformed data.', priority:'must', type:'sec', phase:2, done:false, criteria:['Install Zod','Create auth schema (email format, password min length 8)','Apply validate middleware to register and login','Returns 400 with field-level error messages','Never exposes raw error objects'] },
+        { id:'#013', title:'Rate limiting on auth routes (express-rate-limit)', desc:'As a security measure, I want brute force protection so attackers cannot guess passwords.', priority:'must', type:'sec', phase:3, done:false, criteria:['Install express-rate-limit','5 failed attempts per 15 minutes on /login','Returns 429 with Retry-After header','Rate limit applies per IP','Whitelist localhost for development'] },
+      ]
+    },
+    {
+      id: 'epic-3', name: 'Vehicle Inventory API & UI', icon: '🚗', color: 'blue',
+      open: false,
+      stories: [
+        { id:'#014', title:'CRUD endpoints for vehicle inventory (GET, POST, PUT, DELETE)', desc:'As a user, I want full control over my vehicle inventory so I can manage what I\'m buying and selling.', priority:'must', type:'feat', phase:2, done:false, criteria:['GET /api/vehicles returns paginated list','POST /api/vehicles creates vehicle','PUT /api/vehicles/:id updates vehicle','DELETE /api/vehicles/:id soft-deletes (sets status to archived)','All routes require auth','Returns 404 if vehicle not found'] },
+        { id:'#015', title:'Filter and search endpoint — make, model, price, status', desc:'As a user, I want to search my inventory quickly so I can find specific vehicles without scrolling.', priority:'must', type:'feat', phase:2, done:false, criteria:['Query params: make, model, minPrice, maxPrice, status','Results filtered server-side in SQL','Returns empty array (not 404) for no results','Search is case-insensitive','Cursor-based pagination implemented'] },
+        { id:'#016', title:'Async image upload to cloud storage (Cloudinary or S3)', desc:'As a user, I want to upload vehicle photos so buyers can see what they\'re buying.', priority:'should', type:'arch', phase:3, done:false, criteria:['POST /api/vehicles/:id/images accepts multipart/form-data','Upload queued as BullMQ job immediately','Worker processes: compress → upload → update DB','Returns job ID for status polling','Max 10 images per vehicle'] },
+        { id:'#017', title:'React inventory list page with search and filter controls', desc:'As a user, I want a clean inventory page so I can view and filter my vehicles at a glance.', priority:'must', type:'feat', phase:2, done:false, criteria:['Vehicle cards with primary image, make, model, price','Search input filters in real-time (debounced 300ms)','Status filter dropdown','Pagination controls','Loading skeleton while fetching'] },
+        { id:'#018', title:'React vehicle detail page with image gallery', desc:'As a user, I want to see full vehicle details with photos so I have all the info in one place.', priority:'must', type:'feat', phase:2, done:false, criteria:['Route /vehicles/:id shows full detail','Image gallery with primary image + thumbnails','Edit button opens edit modal','Linked deals displayed below','Delete vehicle with confirmation'] },
+        { id:'#019', title:'Add/edit vehicle form with client-side validation', desc:'As a user, I want to add or edit vehicles easily so I can keep my inventory up to date.', priority:'must', type:'feat', phase:2, done:false, criteria:['Form fields: make, model, year, mileage, buy price, asking price, notes','All required fields validated before submit','Shows field-level error messages','Submits to POST or PUT depending on mode','Optimistic UI with React Query'] },
+        { id:'#020', title:'Cursor-based pagination on inventory list', desc:'As a developer, I want efficient pagination so the API performs well as inventory grows.', priority:'should', type:'arch', phase:3, done:false, criteria:['API accepts cursor and limit query params','Returns next cursor in response','Frontend loads next page on scroll or click','Default page size: 20 vehicles','Works correctly with filters applied'] },
+      ]
+    },
+    {
+      id: 'epic-4', name: 'Deal Tracker & Real-Time Updates', icon: '⚡', color: 'amber',
+      open: false,
+      stories: [
+        { id:'#021', title:'CRUD endpoints for deals — link deals to vehicles', desc:'As a user, I want to create and manage deals so I can track every sale from enquiry to completion.', priority:'must', type:'feat', phase:2, done:false, criteria:['POST /api/deals creates deal linked to vehicle_id','GET /api/deals lists all deals with vehicle info','GET /api/deals/:id returns full deal detail','PUT /api/deals/:id updates buyer info and notes','DELETE /api/deals/:id cancels and archives deal'] },
+        { id:'#022', title:'Deal status state machine — enquiry → negotiating → completed → cancelled', desc:'As a user, I want deal status to follow a defined flow so the pipeline is always accurate.', priority:'must', type:'arch', phase:2, done:false, criteria:['Valid transitions: enquiry→negotiating, negotiating→completed, negotiating→cancelled','Invalid transitions return 400 with message','Status change updates vehicle status automatically','Status change timestamp recorded','History of transitions stored in activity log'] },
+        { id:'#023', title:'Profit margin calculation per deal (buy price vs sell price)', desc:'As a user, I want to see my profit on each deal so I know exactly how much I\'m making.', priority:'must', type:'feat', phase:2, done:false, criteria:['Profit = agreed_price - buy_price computed in DB','Returned in deal response as profit field','Negative profit shown in red in UI','Total profit aggregated in dashboard stats','Profit updates when agreed price changes'] },
+        { id:'#024', title:'Deal notes and activity timeline with timestamps', desc:'As a user, I want to add notes to deals so I have a full history of every conversation and event.', priority:'should', type:'feat', phase:3, done:false, criteria:['Notes field on deal (textarea)','Activity timeline shows status changes with timestamps','Notes editable inline','Timeline sorted newest-first','At least 5 activity entries visible without scrolling'] },
+        { id:'#025', title:'WebSocket server setup (Socket.io) on Express', desc:'As a developer, I want a WebSocket layer so the frontend can receive live updates without polling.', priority:'must', type:'rt', phase:3, done:false, criteria:['Socket.io initialised on Express HTTP server','Auth middleware applied to WS connections','Client connects automatically on login','Connection status shown in UI corner','Reconnects automatically on disconnect'] },
+        { id:'#026', title:'Emit deal status change events over WebSocket', desc:'As a developer, I want status changes broadcast in real time so all connected clients stay in sync.', priority:'must', type:'rt', phase:3, done:false, criteria:['deal:status_changed event emitted on PUT /:id/status','Payload includes dealId, oldStatus, newStatus, vehicleId','Event emitted after DB update succeeds','Tested with two browser tabs open','Server does not crash on emit if no clients connected'] },
+        { id:'#027', title:'React toast notifications on deal updates (live)', desc:'As a user, I want to see live notifications when deals change so I\'m always aware of activity.', priority:'should', type:'rt', phase:3, done:false, criteria:['Toast appears within 1 second of status change','Toast shows deal ID and new status','Auto-dismisses after 4 seconds','Dismissable by click','Does not stack more than 3 toasts at once'] },
+        { id:'#028', title:'Async job queue for image processing on upload (BullMQ)', desc:'As a developer, I want image processing offloaded to a queue so uploads don\'t block the API.', priority:'should', type:'arch', phase:3, done:false, criteria:['BullMQ installed with Redis connection','Upload endpoint queues job and returns 202','Worker file runs separately from Express server','Failed jobs retried 3 times with backoff','Job completion updates vehicle_images in DB'] },
+      ]
+    },
+    {
+      id: 'epic-5', name: 'Dashboard, Polish & Deployment', icon: '🚀', color: 'green',
+      open: false,
+      stories: [
+        { id:'#029', title:'Dashboard endpoint — active inventory count, total profit, recent deals', desc:'As a user, I want a stats overview so I can see the health of my business at a glance.', priority:'must', type:'feat', phase:3, done:false, criteria:['GET /api/dashboard/stats returns object','Fields: activeVehicles, totalProfit, dealsThisMonth, avgDealValue','Computed with efficient SQL aggregation','Response time under 300ms','Cached for 60 seconds'] },
+        { id:'#030', title:'React dashboard page with summary stats and charts', desc:'As a user, I want a visual dashboard so I can understand my business performance instantly.', priority:'must', type:'feat', phase:3, done:false, criteria:['Stat cards for active vehicles, total profit, deals this month','Profit over time chart (last 8 weeks)','Recent deals table (5 rows)','Quick-add vehicle button prominent','Responsive on mobile'] },
+        { id:'#031', title:'Global error handling middleware with structured JSON errors', desc:'As a developer, I want consistent error responses so the frontend can handle all errors uniformly.', priority:'must', type:'arch', phase:4, done:false, criteria:['Express global error handler at bottom of app.js','All errors return { error: true, message, statusCode }','500 errors logged server-side only','No stack traces exposed in production','Tested with intentional errors on each route'] },
+        { id:'#032', title:'Request logging with Morgan in structured format', desc:'As a developer, I want HTTP request logs so I can debug issues in production.', priority:'should', type:'dx', phase:4, done:false, criteria:['Morgan installed and applied to app','Logs method, path, status, response time','Formatted as JSON in production','Skips 200s for /health route','Logs visible in Render dashboard'] },
+        { id:'#033', title:'Write integration tests for auth and vehicle routes (Jest + Supertest)', desc:'As a developer, I want automated tests so regressions are caught before merging.', priority:'must', type:'dx', phase:4, done:false, criteria:['Jest and Supertest installed','Tests for: register, login, refresh, logout','Tests for: create vehicle, get vehicles, update, delete','Each test cleans up DB after run','Tests pass in CI before merge allowed'] },
+        { id:'#034', title:'Deploy backend to Render with PostgreSQL add-on', desc:'As a developer, I want the backend deployed so the app is publicly accessible for demos.', priority:'must', type:'dx', phase:4, done:false, criteria:['Render web service created from GitHub repo','PostgreSQL database provisioned on Render','All env vars configured in Render dashboard','Auto-deploy on push to main','Health check endpoint /health returns 200'] },
+        { id:'#035', title:'Deploy React frontend to Vercel, wire up env variables', desc:'As a user, I want to access the app via a public URL so I can demo it to employers.', priority:'must', type:'dx', phase:4, done:false, criteria:['Vercel project linked to GitHub repo','VITE_API_URL set to Render backend URL','Build passes without errors','Custom domain or vercel.app URL working','Demo GIF recorded and added to README'] },
+      ]
+    }
+  ]
+};
+
+let data = {};
+
+function load() {
+  const saved = localStorage.getItem('car-flip-crm-stories');
+  data = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_DATA));
+  document.getElementById('doc-title').value = data.title || 'SDLC — User Stories';
+  document.getElementById('doc-author').value = data.author || 'Ahmad';
+  render();
+}
+
+function save() {
+  data.title = document.getElementById('doc-title').value;
+  data.author = document.getElementById('doc-author').value;
+  localStorage.setItem('car-flip-crm-stories', JSON.stringify(data));
+}
+
+document.getElementById('doc-title').addEventListener('change', save);
+document.getElementById('doc-author').addEventListener('change', save);
+
+function cycleStatus(el) {
+  const statuses = ['active','planning','review'];
+  const labels = { active:'Active', planning:'Planning', review:'In Review' };
+  const classes = { active:'status-active', planning:'status-planning', review:'status-review' };
+  const cur = statuses.indexOf(data.status || 'active');
+  const next = statuses[(cur+1)%statuses.length];
+  data.status = next;
+  el.className = 'status-badge ' + classes[next];
+  el.textContent = labels[next];
+  save();
+}
+
+function getEpicColor(id) {
+  return COLORS.find(c=>c.id===id) || COLORS[0];
+}
+
+function render() {
+  renderStats();
+  renderPhaseTabs();
+  renderBoard();
+}
+
+function renderStats() {
+  const total = data.epics.reduce((a,e)=>a+e.stories.length,0);
+  const done = data.epics.reduce((a,e)=>a+e.stories.filter(s=>s.done).length,0);
+  const must = data.epics.reduce((a,e)=>a+e.stories.filter(s=>s.priority==='must').length,0);
+  const byPhase = [0,0,0,0];
+  data.epics.forEach(e=>e.stories.forEach(s=>{ if(s.phase>=1&&s.phase<=4) byPhase[s.phase-1]++; }));
+  document.getElementById('stats-bar').innerHTML = `
+    <div class="stat-item"><div class="stat-label">Total Stories</div><div class="stat-value">${total}</div><div class="stat-sub">${data.epics.length} epics</div></div>
+    <div class="stat-item"><div class="stat-label">Completed</div><div class="stat-value" style="color:var(--green)">${done}</div><div class="stat-sub">${total>0?Math.round(done/total*100):0}% done</div></div>
+    <div class="stat-item"><div class="stat-label">Must Have</div><div class="stat-value" style="color:var(--red)">${must}</div><div class="stat-sub">${total-must} optional</div></div>
+    <div class="stat-item"><div class="stat-label">Phase 1 — Wk 1-2</div><div class="stat-value" style="color:var(--accent)">${byPhase[0]}</div><div class="stat-sub">DB + Auth</div></div>
+    <div class="stat-item"><div class="stat-label">Phase 2 — Wk 3-4</div><div class="stat-value" style="color:var(--green)">${byPhase[1]}</div><div class="stat-sub">API + React</div></div>
+    <div class="stat-item"><div class="stat-label">Phase 3 — Wk 5-6</div><div class="stat-value" style="color:var(--amber)">${byPhase[2]}</div><div class="stat-sub">Real-time + Queue</div></div>
+    <div class="stat-item"><div class="stat-label">Phase 4 — Wk 7-8</div><div class="stat-value" style="color:var(--cyan)">${byPhase[3]}</div><div class="stat-sub">Polish + Deploy</div></div>
+  `;
+}
+
+function renderPhaseTabs() {
+  const phases = [
+    { id:0, label:'All Stories' },
+    { id:1, label:'Phase 1 — DB & Auth' },
+    { id:2, label:'Phase 2 — API & React' },
+    { id:3, label:'Phase 3 — Real-time' },
+    { id:4, label:'Phase 4 — Deploy' },
+  ];
+  const active = window._activePhase || 0;
+  document.getElementById('phase-tabs').innerHTML = phases.map(p=>`
+    <div class="phase-tab ${p.id===active?'active':''}" onclick="setPhase(${p.id})">${p.label}</div>
+  `).join('');
+}
+
+function setPhase(n) { window._activePhase=n; renderPhaseTabs(); renderBoard(); }
+
+function renderBoard() {
+  const phase = window._activePhase || 0;
+  document.getElementById('board').innerHTML = data.epics.map((epic,ei)=>{
+    const stories = phase===0 ? epic.stories : epic.stories.filter(s=>s.phase===phase);
+    if(stories.length===0 && phase!==0) return '';
+    const col = getEpicColor(epic.color);
+    const done = epic.stories.filter(s=>s.done).length;
+    const total = epic.stories.length;
+    const pct = total>0?Math.round(done/total*100):0;
+    return `
+    <div class="epic-section" id="epic-${epic.id}">
+      <div class="epic-header" onclick="toggleEpic('${epic.id}',event)">
+        <div class="epic-icon" style="background:${col.bg};color:${col.color}" onclick="openEditEpic('${epic.id}',event)">${epic.icon}</div>
+        <div class="epic-title-wrap">
+          <span class="epic-name" contenteditable="true" onclick="event.stopPropagation()" onblur="saveEpicName('${epic.id}',this)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${epic.name}</span>
+          <div class="epic-meta">
+            <span class="epic-id mono">${epic.id}</span>
+            <span class="type-badge type-dx">${done}/${total} stories</span>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%;background:${col.color}"></div></div>
+            <span style="font-size:11px;color:${col.color}">${pct}%</span>
+          </div>
+        </div>
+        <div class="epic-actions">
+          <button class="icon-btn" onclick="openAddStory('${epic.id}',null,event)" title="Add story">＋</button>
+          <button class="icon-btn danger" onclick="deleteEpic('${epic.id}',event)" title="Delete epic">🗑</button>
+        </div>
+        <div class="chevron ${epic.open?'open':''}">▶</div>
+      </div>
+      ${epic.open ? `
+      <div class="stories-grid">
+        ${stories.map(s=>renderStory(epic.id,s)).join('')}
+      </div>
+      <div class="add-story-row">
+        <button class="add-story-btn" onclick="openAddStory('${epic.id}',null,event)">＋ Add story to ${epic.name}</button>
+      </div>
+      ` : ''}
+    </div>`;
+  }).join('');
+}
+
+function renderStory(epicId, s) {
+  const phaseColors = {1:'ph1',2:'ph2',3:'ph3',4:'ph4'};
+  const typeColors = {feat:'type-feat',sec:'type-sec',arch:'type-arch',dx:'type-dx',rt:'type-rt'};
+  const typeLabels = {feat:'Feature',sec:'Security',arch:'Arch',dx:'DevX',rt:'Real-time'};
+  const priColors = {must:'must',should:'should',could:'could'};
+  const priLabels = {must:'Must',should:'Should',could:'Could'};
+  return `
+  <div class="story-card ${s._open?'expanded':''}" id="story-${s.id.replace('#','')}">
+    <div class="story-row" onclick="toggleStory('${epicId}','${s.id}',event)">
+      <div class="criterion-check ${s.done?'done':''}" onclick="toggleDone('${epicId}','${s.id}',event)" title="Mark done">${s.done?'✓':''}</div>
+      <span class="story-id-badge ${typeColors[s.type]||'type-feat'} mono" contenteditable="true" onclick="event.stopPropagation()" onblur="saveStoryField('${epicId}','${s.id}','id',this.textContent.trim())" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${s.id}</span>
+      <span class="story-title" contenteditable="true" onclick="event.stopPropagation()" onblur="saveStoryField('${epicId}','${s.id}','title',this.textContent.trim())" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${s.title}</span>
+      <div class="story-badges">
+        <span class="priority-badge ${priColors[s.priority]||'must'}" onclick="cyclePriority('${epicId}','${s.id}',event)">${priLabels[s.priority]||'Must'}</span>
+        <span class="type-badge ${typeColors[s.type]||'type-feat'}">${typeLabels[s.type]||'Feat'}</span>
+        <span class="phase-badge ${phaseColors[s.phase]||'ph1'}" onclick="cyclePhase('${epicId}','${s.id}',event)">Wk ${s.phase<=2?'1-2':s.phase<=4&&s.phase>=3?'5-6':'7-8'}</span>
+      </div>
+      <button class="story-edit-btn" onclick="openEditStory('${epicId}','${s.id}',event)" title="Edit">✏️</button>
+      <button class="story-delete-btn" onclick="deleteStory('${epicId}','${s.id}',event)" title="Delete">🗑</button>
+    </div>
+    ${s._open ? `
+    <div class="story-body open">
+      <div class="story-desc-label">User Story</div>
+      <textarea class="story-desc" onblur="saveStoryField('${epicId}','${s.id}','desc',this.value)">${s.desc||''}</textarea>
+      <div class="criteria-header">
+        <div class="criteria-label">Acceptance Criteria (${(s.criteria||[]).filter((_,i)=>s._criteriaDone&&s._criteriaDone[i]).length}/${(s.criteria||[]).length} done)</div>
+        <button class="add-criteria-btn" onclick="addCriteriaInline('${epicId}','${s.id}')">＋ Add</button>
+      </div>
+      <div class="criteria-list">
+        ${(s.criteria||[]).map((c,ci)=>`
+        <div class="criterion-row">
+          <div class="criterion-check ${s._criteriaDone&&s._criteriaDone[ci]?'done':''}" onclick="toggleCriteriaDone('${epicId}','${s.id}',${ci})">${s._criteriaDone&&s._criteriaDone[ci]?'✓':''}</div>
+          <span class="criterion-text" contenteditable="true" onblur="saveCriteria('${epicId}','${s.id}',${ci},this.textContent.trim())" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${c}</span>
+          <button class="criterion-del" onclick="deleteCriteria('${epicId}','${s.id}',${ci})">✕</button>
+        </div>`).join('')}
+      </div>
+    </div>` : ''}
+  </div>`;
+}
+
+function toggleEpic(id, e) {
+  if(e.target.closest('.epic-actions')||e.target.classList.contains('epic-name')||e.target.closest('.icon-btn')) return;
+  const epic = data.epics.find(ep=>ep.id===id);
+  if(epic) { epic.open=!epic.open; save(); renderBoard(); }
+}
+
+function toggleStory(epicId, storyId, e) {
+  if(e.target.classList.contains('story-title')||e.target.classList.contains('story-id-badge')||e.target.classList.contains('criterion-check')||e.target.closest('.story-badges')||e.target.closest('.story-edit-btn')||e.target.closest('.story-delete-btn')) return;
+  const epic = data.epics.find(ep=>ep.id===epicId);
+  const s = epic&&epic.stories.find(s=>s.id===storyId);
+  if(s) { s._open=!s._open; save(); renderBoard(); }
+}
+
+function toggleDone(epicId,storyId,e) {
+  e.stopPropagation();
+  const epic=data.epics.find(ep=>ep.id===epicId);
+  const s=epic&&epic.stories.find(s=>s.id===storyId);
+  if(s){s.done=!s.done;save();render();}
+}
+
+function cyclePriority(epicId,storyId,e) {
+  e.stopPropagation();
+  const pris=['must','should','could'];
+  const epic=data.epics.find(ep=>ep.id===epicId);
+  const s=epic&&epic.stories.find(s=>s.id===storyId);
+  if(s){const i=pris.indexOf(s.priority);s.priority=pris[(i+1)%pris.length];save();renderBoard();}
+}
+
+function cyclePhase(epicId,storyId,e) {
+  e.stopPropagation();
+  const epic=data.epics.find(ep=>ep.id===epicId);
+  const s=epic&&epic.stories.find(s=>s.id===storyId);
+  if(s){s.phase=(s.phase%4)+1;save();renderBoard();}
+}
+
+function saveStoryField(epicId,storyId,field,val) {
+  const epic=data.epics.find(ep=>ep.id===epicId);
+  const s=epic&&epic.stories.find(s=>s.id===storyId);
+  if(s&&val){s[field]=val;save();if(field==='id')renderBoard();}
+}
+
+function saveEpicName(id,el) {
+  const epic=data.epics.find(ep=>ep.id===id);
+  if(epic&&el.textContent.trim()){epic.name=el.textContent.trim();save();}
+}
+
+function toggleCriteriaDone(epicId,storyId,ci) {
+  const epic=data.epics.find(ep=>ep.id===epicId);
+  const s=epic&&epic.stories.find(s=>s.id===storyId);
+  if(s){if(!s._criteriaDone)s._criteriaDone={};s._criteriaDone[ci]=!s._criteriaDone[ci];save();renderBoard();}
+}
+
+function saveCriteria(epicId,storyId,ci,val) {
+  const epic=data.epics.find(ep=>ep.id===epicId);
+  const s=epic&&epic.stories.find(s=>s.id===storyId);
+  if(s&&s.criteria&&val){s.criteria[ci]=val;save();}
+}
+
+function deleteCriteria(epicId,storyId,ci) {
+  const epic=data.epics.find(ep=>ep.id===epicId);
+  const s=epic&&epic.stories.find(s=>s.id===storyId);
+  if(s&&s.criteria){s.criteria.splice(ci,1);save();renderBoard();}
+}
+
+function addCriteriaInline(epicId,storyId) {
+  const epic=data.epics.find(ep=>ep.id===epicId);
+  const s=epic&&epic.stories.find(s=>s.id===storyId);
+  if(s){if(!s.criteria)s.criteria=[];s.criteria.push('New criterion');save();renderBoard();}
+}
+
+function deleteStory(epicId,storyId,e) {
+  e.stopPropagation();
+  if(!confirm('Delete this story?'))return;
+  const epic=data.epics.find(ep=>ep.id===epicId);
+  if(epic){epic.stories=epic.stories.filter(s=>s.id!==storyId);save();render();toast('Story deleted','🗑');}
+}
+
+function deleteEpic(id,e) {
+  e.stopPropagation();
+  if(!confirm('Delete this entire epic and all its stories?'))return;
+  data.epics=data.epics.filter(ep=>ep.id!==id);save();render();toast('Epic deleted','🗑');
+}
+
+// STORY MODAL
+let _editingEpicId=null, _editingStoryId=null;
+
+function openAddStory(epicId,_,e) {
+  if(e)e.stopPropagation();
+  _editingEpicId=epicId;_editingStoryId=null;
+  const epic=data.epics.find(ep=>ep.id===epicId);
+  const total=epic?epic.stories.length:0;
+  document.getElementById('modal-title-text').textContent='Add Story';
+  document.getElementById('m-id').value='#'+String(data.epics.reduce((a,ep)=>a+ep.stories.length,0)+1).padStart(3,'0');
+  document.getElementById('m-title').value='';
+  document.getElementById('m-desc').value='';
+  document.getElementById('m-priority').value='must';
+  document.getElementById('m-type').value='feat';
+  document.getElementById('m-phase').value='1';
+  document.getElementById('m-criteria').innerHTML=renderModalCriteria([]);
+  document.getElementById('story-modal').classList.add('open');
+}
+
+function openEditStory(epicId,storyId,e) {
+  if(e)e.stopPropagation();
+  _editingEpicId=epicId;_editingStoryId=storyId;
+  const epic=data.epics.find(ep=>ep.id===epicId);
+  const s=epic&&epic.stories.find(s=>s.id===storyId);
+  if(!s)return;
+  document.getElementById('modal-title-text').textContent='Edit Story';
+  document.getElementById('m-id').value=s.id;
+  document.getElementById('m-title').value=s.title;
+  document.getElementById('m-desc').value=s.desc||'';
+  document.getElementById('m-priority').value=s.priority||'must';
+  document.getElementById('m-type').value=s.type||'feat';
+  document.getElementById('m-phase').value=s.phase||1;
+  document.getElementById('m-criteria').innerHTML=renderModalCriteria(s.criteria||[]);
+  document.getElementById('story-modal').classList.add('open');
+}
+
+function renderModalCriteria(criteria) {
+  return criteria.map((c,i)=>`
+    <div class="modal-criterion">
+      <input class="form-input" value="${c.replace(/"/g,'&quot;')}">
+      <button class="icon-btn danger" onclick="this.parentElement.remove()">✕</button>
+    </div>`).join('');
+}
+
+function addModalCriteria() {
+  const row=document.createElement('div');row.className='modal-criterion';
+  row.innerHTML='<input class="form-input" placeholder="Acceptance criterion..."><button class="icon-btn danger" onclick="this.parentElement.remove()">✕</button>';
+  document.getElementById('m-criteria').appendChild(row);
+  row.querySelector('input').focus();
+}
+
+function saveStory() {
+  const id=document.getElementById('m-id').value.trim();
+  const title=document.getElementById('m-title').value.trim();
+  if(!title){alert('Title required');return;}
+  const criteria=[...document.querySelectorAll('#m-criteria .form-input')].map(i=>i.value).filter(Boolean);
+  const storyData={
+    id:id||'#new',title,
+    desc:document.getElementById('m-desc').value,
+    priority:document.getElementById('m-priority').value,
+    type:document.getElementById('m-type').value,
+    phase:parseInt(document.getElementById('m-phase').value),
+    done:false, criteria,
+  };
+  const epic=data.epics.find(ep=>ep.id===_editingEpicId);
+  if(!epic)return;
+  if(_editingStoryId){
+    const idx=epic.stories.findIndex(s=>s.id===_editingStoryId);
+    if(idx>-1){const old=epic.stories[idx];storyData._open=old._open;storyData.done=old.done;storyData._criteriaDone=old._criteriaDone;epic.stories[idx]=storyData;}
+    toast('Story updated','✅');
+  } else {
+    epic.open=true;
+    epic.stories.push(storyData);
+    toast('Story added','✅');
+  }
+  save();render();closeModal('story-modal');
+}
+
+// EPIC MODAL
+let _editingEpicModalId=null, _selectedEmoji=null, _selectedColor=null;
+
+function openAddEpic() {
+  _editingEpicModalId=null;_selectedEmoji='🎯';_selectedColor='purple';
+  document.getElementById('em-name').value='New Epic';
+  renderEmojiGrid();renderColorGrid();
+  document.getElementById('epic-modal').classList.add('open');
+}
+
+function openEditEpic(id,e) {
+  e.stopPropagation();
+  _editingEpicModalId=id;
+  const epic=data.epics.find(ep=>ep.id===id);
+  if(!epic)return;
+  _selectedEmoji=epic.icon||'🎯';_selectedColor=epic.color||'purple';
+  document.getElementById('em-name').value=epic.name;
+  renderEmojiGrid();renderColorGrid();
+  document.getElementById('epic-modal').classList.add('open');
+}
+
+function renderEmojiGrid() {
+  document.getElementById('em-emoji-grid').innerHTML=EMOJIS.map(em=>`
+    <div class="emoji-opt ${em===_selectedEmoji?'selected':''}" onclick="selectEmoji('${em}')">${em}</div>`).join('');
+}
+function renderColorGrid() {
+  document.getElementById('em-color-grid').innerHTML=COLORS.map(c=>`
+    <div style="width:28px;height:28px;border-radius:6px;background:${c.bg};border:2px solid ${_selectedColor===c.id?c.color:'transparent'};cursor:pointer;transition:all 0.15s" onclick="selectColor('${c.id}')"></div>`).join('');
+}
+function selectEmoji(em){_selectedEmoji=em;renderEmojiGrid();}
+function selectColor(id){_selectedColor=id;renderColorGrid();}
+
+function saveEpic() {
+  const name=document.getElementById('em-name').value.trim();
+  if(!name)return;
+  if(_editingEpicModalId){
+    const epic=data.epics.find(ep=>ep.id===_editingEpicModalId);
+    if(epic){epic.name=name;epic.icon=_selectedEmoji;epic.color=_selectedColor;}
+    toast('Epic updated','✅');
+  } else {
+    data.epics.push({id:'epic-'+Date.now(),name,icon:_selectedEmoji,color:_selectedColor,open:true,stories:[]});
+    toast('Epic added','✅');
+  }
+  save();render();closeModal('epic-modal');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('open'); });
+});
+
+function exportData() {
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='car-flip-crm-stories.json';a.click();
+  toast('Exported!','⬇');
+}
+
+function importData(e) {
+  const file=e.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{data=JSON.parse(ev.target.result);save();render();toast('Imported!','⬆');}
+    catch{alert('Invalid JSON file');}
+  };
+  r.readAsText(file);
+}
+
+function resetData() {
+  data=JSON.parse(JSON.stringify(DEFAULT_DATA));
+  localStorage.removeItem('car-flip-crm-stories');
+  load();toast('Reset to defaults','↺');
+}
+
+function toast(msg,icon='✅') {
+  const el=document.createElement('div');el.className='toast';
+  el.innerHTML=`<span class="toast-icon">${icon}</span>${msg}`;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>el.remove(),3000);
+}
+
+load();
+</script>
+</body>
+</html>
